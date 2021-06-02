@@ -6,6 +6,7 @@ const { check, validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
 
 const config = require('config');
+const postAuth = require('../../middleware/checks/auth');
 const tokenAuth = require('../../middleware/auth');
 const User = require('../../models/User');
 
@@ -25,13 +26,7 @@ router.get('/', tokenAuth, async (req, res) => {
 // @route POST api/auth
 // @desc Authenticate user & get token
 // @access Public
-router.post(
-    '/',
-    [
-        check('email', 'Please include a valid email address').isEmail(),
-        check('password', 'Password is required').exists()
-    ],
-    async (req, res) => {
+router.post('/', postAuth(), async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
