@@ -2,16 +2,18 @@ const express = require('express');
 const router = express.Router();
 
 const bcrypt = require('bcryptjs');
+const { validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
 
 const config = require('config');
-const getUser = require('../../middleware/checks/users');
+const postUser = require('../../middleware/checks/users');
 const User = require('../../models/User');
+const { createUser, createToken } = require('../../services/user.services');
 
 // @route POST api/users
 // @desc Register user
 // @access Public
-router.post('/', getUser(), async (req, res) => {
+router.post('/', postUser(), async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -26,37 +28,11 @@ router.post('/', getUser(), async (req, res) => {
             return res.status(400).json({
                 errors: [{ msg: 'User already exists' }]
             });
-        } else {
-            user = new User({
-                name,
-                email,
-                password
-            });
-
-            const salt = await bcrypt.genSalt(10);
-            user.password = await bcrypt.hash(password, salt);
-
-            await user.save();
-
-            const payload = {
-                user: {
-                    id: user.id
-                }
-            };
-
-            jwt.sign(
-                payload,
-                config.get('jwtSecret'),
-                { expiresIn: 360000 },
-                (err, token) => {
-                    if (err) {
-                        throw err;
-                    } else {
-                        res.json({ token });
-                    }
-                }
-            );
         }
+
+        user = createUser(name, email, password);
+        token = createToken(user.id);
+        res.json({ token });
     } catch (err) {
         console.error(err.message);
         return res.status(500).send('Server error');
