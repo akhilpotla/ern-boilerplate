@@ -2,12 +2,14 @@ const express = require('express');
 const router = express.Router();
 
 const bcrypt = require('bcryptjs');
+const { validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
 
 const config = require('config');
 const postAuth = require('../../middleware/checks/auth');
 const tokenAuth = require('../../middleware/auth');
 const User = require('../../models/User');
+const { createToken } = require('../../services/user.services');
 
 // @route GET api/auth
 // @desc Get user information
@@ -40,37 +42,17 @@ router.post('/', postAuth(), async (req, res) => {
             return res.status(400).json({
                 errors: [{ msg: 'Invalid Credentials' }]
             });
-        } else {
-
-            const isMatch = await bcrypt.compare(password, user.password);
-
-            if (!isMatch) {
-                return res.status(400).json({
-                    errors: [{ msg: 'Invalid Credentials' }]
-                });
-            } else {
-                const payload = {
-                    user: {
-                        id: user.id
-                    }
-                };
-
-                jwt.sign(
-                    payload,
-                    config.get('jwtSecret'),
-                    { expiresIn: 360000 },
-                    (err, token) => {
-                        if (err) {
-                            throw err;
-                        } else {
-                            res.json({ token });
-                        }
-                    }
-                );
-            }
-
-
         }
+        const isMatch = await bcrypt.compare(password, user.password);
+
+        if (!isMatch) {
+            return res.status(400).json({
+                errors: [{ msg: 'Invalid Credentials' }]
+            });
+        }
+
+        token = createToken(user.id);
+        res.json({ token });
     } catch (err) {
         console.error(err.message);
         return res.status(500).send('Server error');
