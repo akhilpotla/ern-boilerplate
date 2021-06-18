@@ -1,9 +1,14 @@
 const express = require('express');
 const router = express.Router();
 
-const { check, validationResult } = require('express-validator');
+const { validationResult } = require('express-validator');
 
 const tokenAuth = require('../../middleware/auth');
+const {
+    postProfile,
+    putProfileExperience,
+    putProfileEducation
+} = require('../../middleware/checks/profile');
 const Profile = require('../../models/Profile');
 const User = require('../../models/User');
 
@@ -32,10 +37,7 @@ router.get('/me', tokenAuth, async (req, res) => {
 // @route POST api/profile
 // @desc Create or update a user profile
 // @access Private
-router.post('/', [ tokenAuth,
-    check('status', 'Status is required').not().isEmpty(),
-    check('skills', 'Skills is required').not().isEmpty()
-], async (req, res) => {
+router.post('/', [ tokenAuth, postProfile() ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() })
@@ -119,9 +121,9 @@ router.get('/', async (req, res) => {
 // @access Public
 router.get('/user/:user_id', async (req, res) => {
     try {
-        const profile = await Profile.findOne({ user: req.params.user_id }).populate(
-            'user', ['name']
-        );
+        const profile = await Profile
+            .findOne({ user: req.params.user_id })
+            .populate('user', ['name']);
 
         if (!profile) {
             return res.status(400).json({ msg: 'Profile not found'});
@@ -159,11 +161,7 @@ router.delete('/', tokenAuth, async (req, res) => {
 // @route PUT api/profile/experience
 // @desc Add profile experience
 // @access Private
-router.put('/experience', [ tokenAuth, [
-    check('title', 'Title is required').not().isEmpty(),
-    check('company', 'Company is required').not().isEmpty(),
-    check('from', 'From date is required').not().isEmpty()
-] ], async (req, res) => {
+router.put('/experience', [ tokenAuth,  putProfileExperience() ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ msg: errors.array() });
@@ -226,12 +224,7 @@ router.delete('/experience/:exp_id', tokenAuth, async (req, res) => {
 // @route PUT api/profile/education
 // @desc Add profile education
 // @access Private
-router.put('/education', [ tokenAuth, [
-    check('school', 'School is required').not().isEmpty(),
-    check('degree', 'Degree is required').not().isEmpty(),
-    check('fieldOfStudy', 'Field of study is required').not().isEmpty(),
-    check('from', 'From date is required').not().isEmpty()
-] ], async (req, res) => {
+router.put('/education', [ tokenAuth,  putProfileEducation() ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ msg: errors.array() });
