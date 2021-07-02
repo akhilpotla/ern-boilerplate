@@ -108,3 +108,6 @@ dist
 
 # Vim
 .swp
+
+# Misc
+devconnector_html_theme/
