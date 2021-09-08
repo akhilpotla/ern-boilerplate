@@ -11,9 +11,6 @@ const Register = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [password2, setPassword2] = useState('');
-    const instance = axios.create({
-        baseURL: 'http://localhost:5000'
-    });
     let history = useHistory();
 
 
@@ -25,7 +22,7 @@ const Register = () => {
             const formData = {name, email, password};
 
             try {
-                const res = await instance.post('/api/users', formData);
+                const res = await axios.post('/users', formData);
                 setAuthToken(res.data.token);
                 history.push('/profile')
             } catch (err) {
