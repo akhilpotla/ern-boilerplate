@@ -19,9 +19,9 @@ export const isLoggedIn = () => {
     const cookies = getCookies();
     const token = cookies.token;
     if (token !== undefined && token !== "") {
-        return false;
+        return true;
     }
-    return true;
+    return false;
 }
 
 export const deleteCookie = (cookie) => {
