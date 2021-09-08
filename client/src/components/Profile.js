@@ -7,15 +7,15 @@ const Profile = () => {
 
     let history = useHistory();
 
-    if (isLoggedIn()) {
+    if (!isLoggedIn()) {
+        history.push('/login')
+        return null;
+    } else {
         return (
             <div>
                 <p>This is the profile page</p>
             </div>
         );
-    } else {
-        history.push('/login')
-        return null;
     }
 }
 
