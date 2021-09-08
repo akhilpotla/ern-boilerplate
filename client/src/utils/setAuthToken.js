@@ -25,5 +25,5 @@ export const isLoggedIn = () => {
 }
 
 export const deleteCookie = (cookie) => {
-    document.cookie = cookie + "=";
+    document.cookie = cookie + "=;" + "expires=-1";
 }
