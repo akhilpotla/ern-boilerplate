@@ -1,5 +1,10 @@
+const timeLimit = 30 * 60 * 1000;
+
+
 export const setAuthToken = (token) => {
-    const tokenCookie = 'token=' + token;
+    var now = new Date();
+    var expireTime = new Date(now.getTime() + timeLimit);
+    const tokenCookie = 'token=' + token + ';expires=' + expireTime.toUTCString() + ';';
     document.cookie = tokenCookie;
 }
 
