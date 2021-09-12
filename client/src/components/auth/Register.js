@@ -11,7 +11,7 @@ const Register = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [password2, setPassword2] = useState('');
-    let history = useHistory();
+    const history = useHistory();
 
 
     const onSubmit = async (e) => {
@@ -22,7 +22,7 @@ const Register = () => {
             const formData = {name, email, password};
 
             try {
-                const res = await axios.post('/users', formData);
+                const res = await axios.post('/api/users', formData);
                 setAuthToken(res.data.token);
                 history.push('/profile')
             } catch (err) {
