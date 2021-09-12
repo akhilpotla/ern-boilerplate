@@ -18,7 +18,8 @@ const Login = () => {
             setAuthToken(res.data.token);
             history.push('/profile');
         } catch (err) {
-            console.error(err.response.data);
+            const errorMessage  = err.response.data.errors[0].msg;
+            alert(errorMessage);
         }
     }
 
