@@ -24,7 +24,7 @@ const Register = () => {
             try {
                 const res = await axios.post('/api/users', formData);
                 setAuthToken(res.data.token);
-                history.push('/profile')
+                history.push('/profile');
             } catch (err) {
                 const errorMessage  = err.response.data.errors[0].msg;
                 alert(errorMessage);
