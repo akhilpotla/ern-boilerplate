@@ -16,7 +16,7 @@ import store from './store';
 // Styles
 import './App.css';
 
-axios.defaults.baseURL = 'http://localhost:5000/api';
+axios.defaults.baseURL = 'http://localhost:5000';
 
 const App = () => (
     <Provider store={store}>
