@@ -11,18 +11,6 @@ const tokenAuth = require('../../middleware/auth');
 const User = require('../../models/User');
 const { createToken } = require('../../services/user.services');
 
-// @route GET api/auth
-// @desc Get user information
-// @access Public
-router.get('/', tokenAuth, async (req, res) => {
-    try {
-        const user = await User.findById(req.user.id).select('-password');
-        return res.json(user);
-    } catch (err) {
-        console.error(err.message);
-        return res.status(500).send('Server error');
-    }
-});
 
 // @route POST api/auth
 // @desc Authenticate user & get token
