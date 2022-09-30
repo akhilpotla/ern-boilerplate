@@ -31,8 +31,7 @@ router.post('/', postUser(), async (req, res) => {
         }
 
         user = createUser(name, email, password);
-        token = createToken(user.id);
-        res.json({ token });
+        res.json('Registered');
     } catch (err) {
         console.error(err.message);
         return res.status(500).send('Server error');
