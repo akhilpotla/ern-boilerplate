@@ -1,19 +1,18 @@
 const mongoose = require('mongoose');
-const config = require('config');
-const db = config.get('mongoURI');
-
 
 const connectDB = async () => {
     try {
-        await mongoose.connect(db, {
+        // Database Name
+        const dbName = 'daybookDB';
+        const db = await mongoose.connect(
+            `mongodb://127.0.0.1:27017/${dbName}`, {
             useNewUrlParser: true,
-            useCreateIndex: true,
             useUnifiedTopology: true,
-            useFindAndModify: false
+            useCreateIndex: true
         });
-        console.log('MongoDB Connected');
-    } catch (err) {
-        console.log(err.message);
+        console.log(`Database connected : ${db.connection.host}`);
+    } catch  (error) {
+        console.error(`Error: ${error.message}`);
         process.exit(1);
     }
 }

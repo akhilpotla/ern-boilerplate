@@ -1,4 +1,3 @@
 {
-    "mongoURI": "mongodb+srv://akhilp:<password>@cluster0.ul41c.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
     "jwtSecret": "mySecret"
 }
