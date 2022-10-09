@@ -104,8 +104,8 @@ dist
 .tern-port
 
 # Config
-.config/default.json
-.config/db.js
+config/default.json
+config/db.js
 
 # Vim
 .swp
