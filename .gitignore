@@ -105,6 +105,7 @@ dist
 
 # Config
 .config/default.json
+.config/db.js
 
 # Vim
 .swp
