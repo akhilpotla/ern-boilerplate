@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 
@@ -11,7 +11,7 @@ const Register = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [password2, setPassword2] = useState('');
-    const history = useHistory();
+    const navigate = useNavigate();
 
 
     const onSubmit = async (e) => {
@@ -24,7 +24,7 @@ const Register = () => {
             try {
                 const res = await axios.post('/api/users', formData);
                 setAuthToken(res.data.token);
-                history.push('/profile');
+                navigate('/profile');
             } catch (err) {
                 const errorMessage  = err.response.data.errors[0].msg;
                 alert(errorMessage);

@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 
@@ -8,7 +8,7 @@ import { setAuthToken } from '../../utils/setAuthToken';
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const history = useHistory();
+    const navigate = useNavigate();
 
     const onSubmit = async (e) => {
         e.preventDefault();
@@ -16,7 +16,7 @@ const Login = () => {
         try {
             const res = await axios.post('/api/auth', formData);
             setAuthToken(res.data.token);
-            history.push('/profile');
+            navigate('/profile');
         } catch (err) {
             const errorMessage  = err.response.data.errors[0].msg;
             alert(errorMessage);
