@@ -12,8 +12,8 @@ const Profile = () => {
         return null;
     } else {
         return (
-            <div>
-                <p>This is the profile page</p>
+            <div style={{ marginTop: 200 }}>
+                <h3>This is the profile page. You are logged in.</h3>
             </div>
         );
     }
