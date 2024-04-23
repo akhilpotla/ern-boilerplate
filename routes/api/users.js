@@ -3,12 +3,10 @@ const router = express.Router();
 
 const bcrypt = require('bcryptjs');
 const { validationResult } = require('express-validator');
-const jwt = require('jsonwebtoken');
 
 const config = require('config');
+const connection = require('../../config/db');
 const postUser = require('../../middleware/checks/users');
-const User = require('../../models/User');
-const { createUser, createToken } = require('../../services/user.services');
 
 // @route POST api/users
 // @desc Register user
@@ -22,16 +20,18 @@ router.post('/', postUser(), async (req, res) => {
     const { name, email, password } = req.body;
 
     try {
-        let user = await User.findOne({ email });
-
-        if (user) {
-            return res.status(400).json({
-                errors: [{ msg: 'User already exists' }]
-            });
-        }
-
-        user = createUser(name, email, password);
-        res.json('Registered');
+        const salt = await bcrypt.genSalt(config.get('salt'));
+        const encryptedPassword = await bcrypt.hash(password, salt);
+        const query = `INSERT INTO users (name, password, email) VALUES (?, ?, ?)`;
+        connection.execute(query, [name, encryptedPassword, email], (err, results) => {
+            if (err) {
+                if (err.code === 'ER_DUP_ENTRY') {
+                    return res.status(409).json({ error: 'User already exists' });
+                }
+                return res.status(500).send('Server error');
+            }
+            res.json('Registered');
+        });
     } catch (err) {
         console.error(err.message);
         return res.status(500).send('Server error');
