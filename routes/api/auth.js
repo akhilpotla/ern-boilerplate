@@ -3,13 +3,10 @@ const router = express.Router();
 
 const bcrypt = require('bcryptjs');
 const { validationResult } = require('express-validator');
-const jwt = require('jsonwebtoken');
 
-const config = require('config');
+const connection = require('../../config/db');
 const postAuth = require('../../middleware/checks/auth');
-const tokenAuth = require('../../middleware/auth');
-const User = require('../../models/User');
-const { createToken } = require('../../services/user.services');
+const { createToken, getUser } = require('../../services/user.services');
 
 
 // @route POST api/auth
@@ -24,7 +21,8 @@ router.post('/', postAuth(), async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        let user = await User.findOne({ email });
+        const query = `SELECT * FROM users WHERE email = ?`;
+        const user = await getUser(email);
 
         if (!user) {
             return res.status(400).json({
