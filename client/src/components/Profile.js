@@ -1,19 +1,16 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
 import { isLoggedIn } from '../utils/setAuthToken';
 
 const Profile = () => {
 
-    let history = useHistory();
-
     if (!isLoggedIn()) {
-        history.push('/login')
-        return null;
+        return <Navigate to="/login" replace />;
     } else {
         return (
             <div>
-                <p>This is the profile page</p>
+                <h3>This is the profile page. You are logged in.</h3>
             </div>
         );
     }
