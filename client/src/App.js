@@ -14,15 +14,17 @@ import './App.css';
 axios.defaults.baseURL = 'http://localhost:5000';
 
 const App = () => (
-    <Router>
-        <Navbar />
-        <Routes>
-            <Route path="/" element={<Landing />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/profile" element={<Profile />} />
-        </Routes>
-    </Router>
+    <div style={{ paddingTop: '75px' }}>
+        <Router>
+            <Navbar />
+            <Routes>
+                <Route path="/" element={<Landing />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/profile" element={<Profile />} />
+            </Routes>
+        </Router>
+    </div>
 );
 
 export default App;
