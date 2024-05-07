@@ -3,8 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 
-import { setAuthToken } from '../../utils/setAuthToken';
-
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -15,11 +13,12 @@ const Login = () => {
         const formData = {email, password};
         try {
             const res = await axios.post('/api/auth', formData);
-            setAuthToken(res.data.token);
-            navigate('/profile');
+            let user = res.data.user;
+            if (user) {
+                navigate('/profile');
+            }
         } catch (err) {
-            const errorMessage  = err.response.data.errors[0].msg;
-            alert(errorMessage);
+            alert('Authentication failed');
         }
     }
 
