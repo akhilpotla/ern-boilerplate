@@ -1,48 +1,26 @@
 const express = require('express');
 const router = express.Router();
-
-const bcrypt = require('bcryptjs');
+const passport = require('passport');
 const { validationResult } = require('express-validator');
 
 const connection = require('../../config/db');
 const postAuth = require('../../middleware/checks/auth');
 const { createToken, getUser } = require('../../services/user.services');
-
+const config = require('config');
 
 // @route POST api/auth
-// @desc Authenticate user & get token
+// @desc Authenticate user & initiate session
 // @access Public
-router.post('/', postAuth(), async (req, res) => {
+router.post('/', [postAuth(), passport.authenticate('local')], (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
 
-    const { email, password } = req.body;
-
-    try {
-        const query = `SELECT * FROM users WHERE email = ?`;
-        const user = await getUser(email);
-
-        if (!user) {
-            return res.status(400).json({
-                errors: [{ msg: 'Invalid Credentials' }]
-            });
-        }
-        const isMatch = await bcrypt.compare(password, user.password);
-
-        if (!isMatch) {
-            return res.status(400).json({
-                errors: [{ msg: 'Invalid Credentials' }]
-            });
-        }
-
-        token = createToken(user.id);
-        res.json({ token });
-    } catch (err) {
-        console.error(err.message);
-        return res.status(500).send('Server error');
-    }
+    res.status(200).json({
+        message: "Logged in",
+        user: { id: req.user.id, name: req.user.name }
+    });
 });
 
 module.exports = router;
