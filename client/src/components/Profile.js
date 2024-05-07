@@ -1,39 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import axios from 'axios';
+
+import { isLoggedIn } from '../utils/isLoggedIn';
 
 const Profile = () => {
+    const [isAuthenticated, setIsAuthenticated] = useState(null);
 
-    const [loggedIn, setLoggedIn] = useState(false);
-
-    const getLoggedIn = async () => {
-        console.log('getLoggedIn');
-        try {
-            console.log('trying');
-            const res = await axios.get('/api/users', { withCredentials: true });
-            console.log('Response: ', res);
-            setLoggedIn(true);
-            console.log(res);
-        } catch (err) {
-            console.log('Sad face');
-            console.log(err);
-        }
-    }
 
     useEffect(() => {
-        getLoggedIn();
-        console.log('Logged In: ', loggedIn);
-    }, [loggedIn])
+        isLoggedIn().then(authStatus => {
+            setIsAuthenticated(authStatus);
+        }).catch(error => {
+            console.error('Authentication check failed', error);
+        });
+    }, [])
 
-    // if (!loggedIn) {
-    //     return <Navigate to="/login" replace />;
-    // } else {
+    if (isAuthenticated == false) {
+        return <Navigate to="/login" replace />;
+    } else if (isAuthenticated == true) {
         return (
             <div>
                 <h3>This is the profile page. You are logged in.</h3>
             </div>
         );
-    // }
+    } else {
+        return <div>Loading...</div>;
+    }
 }
 
 export default Profile;
