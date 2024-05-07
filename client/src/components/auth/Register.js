@@ -3,8 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 
-import { setAuthToken } from '../../utils/setAuthToken';
-
 const Register = () => {
 
     const [name, setName] = useState('');
@@ -23,8 +21,9 @@ const Register = () => {
 
             try {
                 const res = await axios.post('/api/users', formData);
-                setAuthToken(res.data.token);
-                navigate('/profile');
+                if (res.data.user) {
+                    navigate('/profile');
+                }
             } catch (err) {
                 const errorMessage  = err.response.data.errors[0].msg;
                 alert(errorMessage);
