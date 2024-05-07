@@ -23,18 +23,36 @@ router.post('/', postUser(), async (req, res) => {
         const salt = await bcrypt.genSalt(config.get('salt'));
         const encryptedPassword = await bcrypt.hash(password, salt);
         const query = `INSERT INTO users (name, password, email) VALUES (?, ?, ?)`;
-        connection.execute(query, [name, encryptedPassword, email], (err, results) => {
+        await connection.query(query, [name, encryptedPassword, email]);
+
+        const [users] = await connection.query('SELECT * FROM users WHERE email = ?', [email]);
+        const user = users[0];
+
+        req.login(user, (err) => {
             if (err) {
-                if (err.code === 'ER_DUP_ENTRY') {
-                    return res.status(409).json({ error: 'User already exists' });
-                }
-                return res.status(500).send('Server error');
+                console.error('Login failed', err);
+                return res.status(500).send('Login after registration failed');
             }
-            res.json('Registered');
+            res.json({
+                message: 'Registered and logged in',
+                user: { id: req.user.id, name: req.user.name }
+            });
         });
+
     } catch (err) {
         console.error(err.message);
-        return res.status(500).send('Server error');
+        if (err.code === 'ER_DUP_ENTRY') {
+            return res.status(409).json({ errors: [{ msg: 'User already exists'}] });
+        }
+        return res.status(500).send({ errors: [{ msg: 'Server error'}] });
+    }
+});
+
+router.get('/', async (req, res) => {
+    if (req.isAuthenticated()) {
+        res.status(200).send('Authenticated');
+    } else {
+        res.status(401).send('Unauthorized');
     }
 });
 
