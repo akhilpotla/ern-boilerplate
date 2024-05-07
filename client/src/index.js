@@ -3,7 +3,8 @@ import { createRoot } from 'react-dom/client'; // Updated import
 import App from './App';
 import axios from 'axios';
 
-axios.defaults.baseURL = 'http://localhost:3000';
+axios.defaults.baseURL = 'http://localhost:5000';
+axios.defaults.withCredentials = true;
 
 // Get the container element
 const container = document.getElementById('root');
