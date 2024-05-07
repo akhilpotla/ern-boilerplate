@@ -1,17 +1,10 @@
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
 
-const connection = mysql.createConnection({
+const connection = mysql.createPool({
   host: 'localhost',
   user: 'user',
-  password: 'password',
-  database: 'mydb'
-});
-
-connection.connect(err => {
-  if (err) {
-    return console.error('error: ' + err.message);
-  }
-  console.log('Connected to the MySQL server.');
+  database: 'mydb',
+  password: 'password'
 });
 
 const sql = `
@@ -24,13 +17,6 @@ CREATE TABLE IF NOT EXISTS users (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 `;
 
-connection.query(sql, function(err, results, fields) {
-  if (err) {
-    console.error('Failed to create table: ' + err);
-    return;
-  }
-  console.log('Table created or already exists.');
-});
-
+connection.query(sql);
 
 module.exports = connection;
