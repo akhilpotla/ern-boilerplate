@@ -3,14 +3,16 @@ const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcryptjs');
-const connection = require('./config/db');
+const { sequelize, User } = require('./config/db');
 const cors = require('cors');
 const config = require('config');
-const MySQLStore = require('express-mysql-session')(session);
+// const MySQLStore = require('express-mysql-session')(session);
+const SequelizeStore = require("connect-session-sequelize")(session.Store);
 
 const app = express();
 
-const sessionStore = new MySQLStore({}, connection);
+// const sessionStore = new MySQLStore({}, sequelize);
+const sessionStore = new SequelizeStore({db: sequelize});
 
 // Init Middleware
 app.use(express.json({
