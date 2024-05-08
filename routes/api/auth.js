@@ -3,9 +3,7 @@ const router = express.Router();
 const passport = require('passport');
 const { validationResult } = require('express-validator');
 
-const connection = require('../../config/db');
 const postAuth = require('../../middleware/checks/auth');
-const { createToken, getUser } = require('../../services/user.services');
 const config = require('config');
 
 // @route POST api/auth
