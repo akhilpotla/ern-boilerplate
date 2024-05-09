@@ -4,8 +4,8 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const { validationResult } = require('express-validator');
 
+const { sequelize, User } = require('../../config/db');
 const config = require('config');
-const connection = require('../../config/db');
 const postUser = require('../../middleware/checks/users');
 
 // @route POST api/users
@@ -22,11 +22,9 @@ router.post('/', postUser(), async (req, res) => {
     try {
         const salt = await bcrypt.genSalt(config.get('salt'));
         const encryptedPassword = await bcrypt.hash(password, salt);
-        const query = `INSERT INTO users (name, password, email) VALUES (?, ?, ?)`;
-        await connection.query(query, [name, encryptedPassword, email]);
-
-        const [users] = await connection.query('SELECT * FROM users WHERE email = ?', [email]);
-        const user = users[0];
+        const user = await User.create(
+            { name, password: encryptedPassword, email }
+        );
 
         req.login(user, (err) => {
             if (err) {
@@ -41,7 +39,7 @@ router.post('/', postUser(), async (req, res) => {
 
     } catch (err) {
         console.error(err.message);
-        if (err.code === 'ER_DUP_ENTRY') {
+        if (err.name === 'SequelizeUniqueConstraintError') {
             return res.status(409).json({ errors: [{ msg: 'User already exists'}] });
         }
         return res.status(500).send({ errors: [{ msg: 'Server error'}] });
