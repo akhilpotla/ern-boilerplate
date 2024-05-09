@@ -2,7 +2,11 @@ const { Sequelize, DataTypes } = require('sequelize');
 
 const sequelize = new Sequelize('mydb', 'user', 'password', {
   host: 'localhost',
-  dialect: 'mysql'
+  dialect: 'mysql',
+  logging: false,
+  define: {
+    timestamps: true
+  }
 });
 
 sequelize.authenticate().then(() => {
@@ -25,12 +29,12 @@ const User = sequelize.define('users', {
     allowNull: false,
     unique: true
   }
-}, { timestamps: true }); // The default for timestamps is true
+});
 
-sequelize.sync().then(() => {
+sequelize.sync({ alter: true }).then(() => {
   console.log('User table created successfully!');
 }).catch((error) => {
   console.error('Unable to create table: ', error);
 });
-
+ 
 module.exports = { sequelize, User };
