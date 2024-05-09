@@ -9,7 +9,8 @@ const config = require('config');
 // @route POST api/auth
 // @desc Authenticate user & initiate session
 // @access Public
-router.post('/', [postAuth(), passport.authenticate('local')], (req, res, next) => {
+router.post(
+    '/', [ postAuth(), passport.authenticate('local')], (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
