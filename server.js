@@ -3,14 +3,14 @@ const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcryptjs');
-const connection = require('./config/db');
+const { sequelize, User } = require('./config/db');
 const cors = require('cors');
 const config = require('config');
-const MySQLStore = require('express-mysql-session')(session);
+const SequelizeStore = require("connect-session-sequelize")(session.Store);
 
 const app = express();
 
-const sessionStore = new MySQLStore({}, connection);
+const sessionStore = new SequelizeStore({db: sequelize});
 
 // Init Middleware
 app.use(express.json({
@@ -39,8 +39,7 @@ passport.use(new LocalStrategy({
     passwordField: 'password'
     }, async function(username, password, done) {
       try {
-        const [users] = await connection.query('SELECT * FROM users WHERE email = ?', [username]);
-        const user = users[0];
+        const user = await User.findOne({ where: { email: username } });
         if (!user) {
           return done(null, false, { message: 'Incorrect email.' });
         }
@@ -63,8 +62,8 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser(async (id, done) => {
     try {
-        const [rows] = await connection.query('SELECT * FROM users WHERE id = ?', [id]);
-        done(null, rows[0]); // Deserialize user from the rows returned by MySQL
+        const user = await User.findOne({ where: { id: id } });
+        done(null, user); // Deserialize user from the rows returned by MySQL
     } catch (error) {
         done(error);
     }
@@ -73,14 +72,7 @@ passport.deserializeUser(async (id, done) => {
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.get('/', (req, res) => {
-  if (req.session.viewCount) {
-    req.session.viewCount++;
-  } else {
-    req.session.viewCount = 1;
-  }
-  res.send(`You have visited this page ${req.session.viewCount} number of times`);
-});
+app.get('/', (req, res) => res.send('API Running'));
 
 // Define Routes
 app.use('/api/auth', require('./routes/api/auth'));

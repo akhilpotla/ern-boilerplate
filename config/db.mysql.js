@@ -1,22 +1,40 @@
-const mysql = require('mysql2/promise');
+const { Sequelize, DataTypes } = require('sequelize');
 
-const connection = mysql.createPool({
+const sequelize = new Sequelize('mydb', 'user', 'password', {
   host: 'localhost',
-  user: 'user',
-  database: 'mydb',
-  password: 'password'
+  dialect: 'mysql',
+  logging: false,
+  define: {
+    timestamps: true
+  }
 });
 
-const sql = `
-CREATE TABLE IF NOT EXISTS users (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(255) NOT NULL,
-  password VARCHAR(255) NOT NULL,
-  email VARCHAR(255) UNIQUE,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-`;
+sequelize.authenticate().then(() => {
+  console.log('Connection has been established successfully.');
+}).catch((error) => {
+  console.error('Unable to connect to the database: ', error);
+});
 
-connection.query(sql);
+const User = sequelize.define('users', {
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  password: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  email: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true
+  }
+});
 
-module.exports = connection;
+sequelize.sync({ alter: true }).then(() => {
+  console.log('User table created successfully!');
+}).catch((error) => {
+  console.error('Unable to create table: ', error);
+});
+ 
+module.exports = { sequelize, User };
