@@ -1,0 +1,5 @@
+{
+    "jwtSecret": "mySecret",
+    "salt": 10,
+    "maxAgeMilliseconds": 60000
+}
