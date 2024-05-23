@@ -22,4 +22,13 @@ describe('POST /api/users', () => {
         });
         expect(res.statusCode).toBe(200);
     });
+
+    it('Should fail to register a user with the same email', async () => {
+        const res = await request(app).post('/api/users').send({
+            name: 'john',
+            email: 'john@example.com',
+            password: 'password'
+        });
+        expect(res.statusCode).toBe(409);
+    });
 });
