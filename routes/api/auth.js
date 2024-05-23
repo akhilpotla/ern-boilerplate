@@ -4,7 +4,6 @@ const passport = require('passport');
 const { validationResult } = require('express-validator');
 
 const postAuth = require('../../middleware/checks/auth');
-const config = require('config');
 
 // @route POST api/auth
 // @desc Authenticate user & initiate session
