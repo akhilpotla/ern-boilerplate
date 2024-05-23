@@ -23,11 +23,27 @@ afterAll(async () => {
 });
 
 describe('POST /api/auth', () => {
-    it('Should register a user', async () => {
+    it('Should authenticate a user', async () => {
         const res = await request(app).post('/api/auth').send({
             email: 'john@example.com',
             password: 'password'
         });
         expect(res.statusCode).toBe(200);
+    });
+
+    it('Should fail to authenticate a user with wrong email', async () => {
+        const res = await request(app).post('/api/auth').send({
+            email: 'steve@example.com',
+            password: 'password'
+        });
+        expect(res.statusCode).toBe(401);
+    });
+
+    it('Should fail to authenticate a user with wrong password', async () => {
+        const res = await request(app).post('/api/auth').send({
+            email: 'john@example.com',
+            password: 'passwordpassword'
+        });
+        expect(res.statusCode).toBe(401);
     });
 });
